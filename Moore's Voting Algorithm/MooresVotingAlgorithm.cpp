@@ -2,32 +2,42 @@
 #include <vector>
 using namespace std;
 
-int majorityElement(vector<int> nums) {
-    int freq = 0, candidate = 0;
-    int n = nums.size();
+int findMajorityCandidate(const vector<int>& nums) {
+    int candidate = 0, count = 0;
     
-    for (int i = 0; i < n; i++) {
-        if (freq == 0) {
-            candidate = nums[i];
+    // Phase 1: Find a potential candidate
+    for (int num : nums) {
+        if (count == 0) {
+            candidate = num;  // Set the current number as the candidate
         }
-        if (nums[i] == candidate) {
-            freq++;
+        if (num == candidate) {
+            count++;
         } else {
-            freq--;
+            count--;
         }
     }
     
+    return candidate;  // This is the potential candidate
+}
+
+bool isMajority(const vector<int>& nums, int candidate) {
     int count = 0;
-    for (int val : nums) {
-        if (val == candidate) {
+    for (int num : nums) {
+        if (num == candidate) {
             count++;
         }
     }
+    return count > nums.size() / 2;
+}
+
+int majorityElement(const vector<int>& nums) {
+    int candidate = findMajorityCandidate(nums);
     
-    if (count > n / 2) {
+    // Phase 2: Verify if the candidate is the majority element
+    if (isMajority(nums, candidate)) {
         return candidate;
     } else {
-        return -1;
+        return -1;  // No majority element found
     }
 }
 
@@ -47,13 +57,15 @@ int main() {
     for (int i = 0; i < n; i++) {
         cin >> nums[i];
     }
-    int ans = majorityElement(nums);
+
+    int result = majorityElement(nums);
     
-    if (ans != -1) {
-        cout << "The Majority Element is: " << ans << endl;
+    if (result != -1) {
+        cout << "The Majority Element is: " << result << endl;
     } else {
         cout << "No Majority Element found." << endl;
     }
 
     return 0;
 }
+
