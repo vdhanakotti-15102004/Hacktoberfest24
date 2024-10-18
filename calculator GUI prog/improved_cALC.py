@@ -1,107 +1,108 @@
-import tkinter as tk
+import tkinter as tk  # Ensure Tkinter is imported
 
+# Initialize the main application window
 root = tk.Tk()
-
-fnum = sec_num = operator = None
 root.title("Calculator")
+root.geometry('350x460')
+root.resizable(0, 0)
+root.configure(bg='black')
 
+# Variables for first number, second number, operator, and memory
+fnum = sec_num = operator = None
+memory_value = 0
+
+# Function to handle operator input
 def getop(op):
     global fnum, operator
-    fnum = int(result_lable['text'])
+    fnum = float(result_label['text']) if result_label['text'] else 0
     operator = op
     clr()
 
+# Function to display the number or decimal point pressed
 def print_text(s):
-    current = result_lable['text']
+    current = result_label['text']
+    if current == 'Error':
+        current = ''
     new = current + str(s)
-    result_lable.config(text = new) 
+    result_label.config(text=new)
 
+# Function to clear the display
 def clr():
-    result_lable.config(text='')
+    result_label.config(text='')
 
+# Function to calculate the result
 def result():
     global fnum, operator, sec_num
+    sec_num = float(result_label['text']) if result_label['text'] else 0
 
-    sec_num = int(result_lable['text'])
-
-    if(operator == '+'):
-        result_lable.config(text=str(fnum+sec_num))
-    elif(operator == '-'):
-        result_lable.config(text=str(fnum-sec_num))
-    elif(operator == '*'):
-        result_lable.config(text=str(fnum*sec_num))
-    else:
-        if(sec_num==0):
-            result_lable.config(text='Error')
+    if operator == '+':
+        result_label.config(text=str(fnum + sec_num))
+    elif operator == '-':
+        result_label.config(text=str(fnum - sec_num))
+    elif operator == '*':
+        result_label.config(text=str(fnum * sec_num))
+    elif operator == '/':
+        if sec_num == 0:
+            result_label.config(text='Error')
         else:
-            result_lable.config(text=str(round(fnum/sec_num)))
+            result_label.config(text=str(round(fnum / sec_num, 2)))
 
-root.geometry('350x460')
-root.resizable(0,0)
-root.configure(bg='black')
+# Memory functions
+def memory_store():
+    global memory_value
+    memory_value = float(result_label['text']) if result_label['text'] else 0
+    clr()
 
-result_lable = tk.Label(root, text='', bg='black', fg='white')
-result_lable.grid(row=0,column=0,pady=(40,20),columnspan=6,sticky='w')
-result_lable.config(font=('verdana', 30, 'bold'))
+def memory_recall():
+    result_label.config(text=str(memory_value))
 
+# Create and configure the display label
+result_label = tk.Label(root, text='', bg='black', fg='white')
+result_label.grid(row=0, column=0, pady=(40, 20), columnspan=6, sticky='w')
+result_label.config(font=('verdana', 30, 'bold'))
 
+# Number buttons
+btns = [
+    ('7', 4, 0), ('8', 4, 1), ('9', 4, 2),
+    ('4', 5, 0), ('5', 5, 1), ('6', 5, 2),
+    ('1', 6, 0), ('2', 6, 1), ('3', 6, 2),
+    ('0', 7, 1), ('.', 7, 0)  # Added decimal button
+]
 
-btn7 = tk.Button(root, text='7', bg='green', fg='white',width = 7, height =3,command=lambda: print_text(7))
-btn8 = tk.Button(root, text='8', bg='green', fg='white',width = 7, height =3,command=lambda:print_text(8))
-btn9 = tk.Button(root, text='9', bg='green', fg='white',width = 7, height =3,command=lambda:print_text(9))
+for (text, row, col) in btns:
+    btn = tk.Button(root, text=text, bg='green', fg='white', width=7, height=3,
+                    command=lambda t=text: print_text(t))
+    btn.grid(row=row, column=col)
+    btn.config(font=('verdana', 14, 'bold'))
 
+# Operator buttons
+operators = [
+    ('+', 4, 3), ('-', 5, 3),
+    ('*', 6, 3), ('/', 7, 3)
+]
 
-btn4 = tk.Button(root, text='4', bg='green', fg='white',width = 7, height =3,command=lambda:print_text(4))
-btn5 = tk.Button(root, text='5', bg='green', fg='white',width = 7, height =3,command=lambda:print_text(5))
-btn6 = tk.Button(root, text='6', bg='green', fg='white',width = 7, height =3,command=lambda:print_text(6))
+for (text, row, col) in operators:
+    btn = tk.Button(root, text=text, fg='white', bg='green', width=7, height=3,
+                    command=lambda t=text: getop(t))
+    btn.grid(row=row, column=col)
+    btn.config(font=('verdana', 14, 'bold'))
 
-btn1 = tk.Button(root, text='1', bg='green', fg='white',width = 7, height =3,command=lambda:print_text(1))
-btn2 = tk.Button(root, text='2', bg='green', fg='white',width = 7, height =3,command=lambda:print_text(2))
-btn3 = tk.Button(root, text='3', bg='green', fg='white',width = 7, height =3,command=lambda:print_text(3))
-btn0 = tk.Button(root, text='0', bg='green', fg='white',width = 7, height =3,command=lambda:print_text(0))
+# Other buttons for equals, clear, and memory functions
+btn_eq = tk.Button(root, text='=', fg='white', bg='green', width=7, height=3, command=result)
+btn_eq.grid(row=7, column=2)
+btn_eq.config(font=('verdana', 14, 'bold'))
 
-btn_add = tk.Button(root, text='+', fg = 'white', bg='green',width = 7, height=3,command= lambda: getop('+'))
-btn_sub = tk.Button(root, text='-', fg = 'white', bg='green',width = 7, height=3,command= lambda: getop('-'))
-btn_mult = tk.Button(root, text='*', fg = 'white', bg='green',width = 7, height=3,command= lambda: getop('*'))
-btn_div = tk.Button(root, text='/', fg = 'white', bg='green',width = 7, height=3,command= lambda: getop('/'))
-btn_eq = tk.Button(root, text='=', fg = 'white', bg='green',width = 7, height=3,command=lambda: result())
-btn_clr = tk.Button(root, text='C', fg = 'white', bg='green',width = 7, height=3,command= clr)
+btn_clr = tk.Button(root, text='C', fg='white', bg='green', width=7, height=3, command=clr)
+btn_clr.grid(row=7, column=0)
+btn_clr.config(font=('verdana', 14, 'bold'))
 
+btn_m_store = tk.Button(root, text='M+', fg='white', bg='green', width=7, height=3, command=memory_store)
+btn_m_store.grid(row=8, column=0)
+btn_m_store.config(font=('verdana', 14, 'bold'))
 
-btn0.grid(row=7,column=1)
-btn0.config(font=('verdana,14,bold'))
-btn7.grid(row=4,column=0)
-btn7.config(font=('verdana,14,bold'))
-btn8.grid(row=4,column=1)
-btn8.config(font=('verdana,14,bold'))
-btn9.grid(row=4,column=2)
-btn9.config(font=('verdana,14,bold'))
-btn4.grid(row=5,column=0)
-btn4.config(font=('verdana,14,bold'))
-btn5.grid(row=5,column=1)
-btn5.config(font=('verdana,14,bold'))
-btn6.grid(row=5,column=2)
-btn6.config(font=('verdana,14,bold'))
+btn_m_recall = tk.Button(root, text='MR', fg='white', bg='green', width=7, height=3, command=memory_recall)
+btn_m_recall.grid(row=8, column=1)
+btn_m_recall.config(font=('verdana', 14, 'bold'))
 
-btn1.grid(row=6,column=0)
-btn1.config(font=('verdana,14,bold'))
-btn2.grid(row=6,column=1)
-btn2.config(font=('verdana,14,bold'))
-btn3.grid(row=6,column=2)
-btn3.config(font=('verdana,14,bold'))
-
-btn_add.grid(row=4,column=3)
-btn_add.config(font=('verdana,14,bold'))
-btn_sub.grid(row=5,column=3)
-btn_sub.config(font=('verdana,14,bold'))
-btn_mult.grid(row=6,column=3)
-btn_mult.config(font=('verdana,14,bold'))
-btn_div.grid(row=7,column=3)
-btn_div.config(font=('verdana,14,bold'))
-
-btn_eq.grid(row=7,column=2)
-btn_eq.config(font=('verdana,14,bold'))
-btn_clr.grid(row=7,column=0)
-btn_clr.config(font=('verdana,14,bold'))
-
+# Run the application
 root.mainloop()
